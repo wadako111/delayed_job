@@ -59,6 +59,9 @@ module Psych
         case o.tag
         when '!binary', 'tag:yaml.org,2002:binary'
           o.value.unpack('m').first
+        when '!ruby/object:BigDecimal'
+          require 'bigdecimal'
+          BigDecimal._load o.value
         when '!str', 'tag:yaml.org,2002:str'
           o.value
         when "!ruby/object:DateTime"
