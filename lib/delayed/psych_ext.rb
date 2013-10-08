@@ -36,9 +36,9 @@ module Psych
     end
 
     class ToRuby
-      alias_method :original_visit_Psych_Nodes_Scalar, :visit_Psych_Nodes_Scalar
+      original_visit_Psych_Nodes_Scalar_method = instance_method(:visit_Psych_Nodes_Scalar)
 
-      def visit_Psych_Nodes_Scalar(o)
+      define_method(:visit_Psych_Nodes_Scalar) do |o|
         @st[o.anchor] = o.value if o.anchor
 
         if klass = Psych.load_tags[o.tag]
@@ -96,7 +96,7 @@ module Psych
         when /^!ruby\/sym(bol)?:?(.*)?$/
           o.value.to_sym
         else
-          original_visit_Psych_Nodes_Scalar o
+          original_visit_Psych_Nodes_Scalar_method.bind(self).call o
         end
       end
 
