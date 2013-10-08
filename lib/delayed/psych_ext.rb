@@ -36,6 +36,8 @@ module Psych
     end
 
     class ToRuby
+      alias_method :original_visit_Psych_Nodes_Scalar, :visit_Psych_Nodes_Scalar
+
       def visit_Psych_Nodes_Scalar(o)
         @st[o.anchor] = o.value if o.anchor
 
@@ -94,7 +96,7 @@ module Psych
         when /^!ruby\/sym(bol)?:?(.*)?$/
           o.value.to_sym
         else
-          @ss.tokenize o.value
+          original_visit_Psych_Nodes_Scalar o
         end
       end
 
