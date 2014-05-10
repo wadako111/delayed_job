@@ -1,13 +1,13 @@
 Delayed::Job
 ============
 [![Gem Version](https://badge.fury.io/rb/delayed_job.png)][gem]
-[![Build Status](https://secure.travis-ci.org/collectiveidea/delayed_job.png?branch=master)][travis]
+[![Build Status](https://travis-ci.org/collectiveidea/delayed_job.png?branch=master)][travis]
 [![Dependency Status](https://gemnasium.com/collectiveidea/delayed_job.png?travis)][gemnasium]
 [![Code Climate](https://codeclimate.com/github/collectiveidea/delayed_job.png)][codeclimate]
 [![Coverage Status](https://coveralls.io/repos/collectiveidea/delayed_job/badge.png?branch=master)][coveralls]
 
 [gem]: https://rubygems.org/gems/delayed_job
-[travis]: http://travis-ci.org/collectiveidea/delayed_job
+[travis]: https://travis-ci.org/collectiveidea/delayed_job
 [gemnasium]: https://gemnasium.com/collectiveidea/delayed_job
 [codeclimate]: https://codeclimate.com/github/collectiveidea/delayed_job
 [coveralls]: https://coveralls.io/r/collectiveidea/delayed_job
@@ -36,7 +36,7 @@ delayed_job 3.0.0 only supports Rails 3.0+. See the [2.0
 branch](https://github.com/collectiveidea/delayed_job/tree/v2.0) for Rails 2.
 
 delayed_job supports multiple backends for storing the job queue. [See the wiki
-for other backends](http://wiki.github.com/collectiveidea/delayed_job/backends).
+for other backends](https://github.com/collectiveidea/delayed_job/wiki/Backends).
 
 If you plan to use delayed_job with Active Record, add `delayed_job_active_record` to your `Gemfile`.
 
@@ -145,6 +145,9 @@ Notifier.signup(@user).deliver
 
 # with delayed_job
 Notifier.delay.signup(@user)
+
+# with delayed_job running at a specific time
+Notifier.delay(run_at: 5.minutes.from_now).signup(@user)
 ```
 
 Remove the `.deliver` method to make it work. It's not ideal, but it's the best
@@ -228,7 +231,7 @@ Custom Jobs
 Jobs are simple ruby objects with a method called perform. Any object which responds to perform can be stuffed into the jobs table. Job objects are serialized to yaml so that they can later be resurrected by the job runner.
 
 ```ruby
-class NewsletterJob < Struct.new(:text, :emails)
+NewsletterJob = Struct.new(:text, :emails) do
   def perform
     emails.each { |e| NewsletterMailer.deliver_text_to_email(text, e) }
   end
@@ -238,7 +241,7 @@ Delayed::Job.enqueue NewsletterJob.new('lorem ipsum...', Customers.find(:all).co
 ```
 To set a per-job max attempts that overrides the Delayed::Worker.max_attempts you can define a max_attempts method on the job
 ```ruby
-class NewsletterJob < Struct.new(:text, :emails)
+NewsletterJob = Struct.new(:text, :emails) do
   def perform
     emails.each { |e| NewsletterMailer.deliver_text_to_email(text, e) }
   end
